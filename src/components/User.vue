@@ -1,0 +1,194 @@
+<template>
+  <div class="hello">
+    <h1>{{ msg }}</h1>
+    <el-row :gutter="20">
+      <el-col :span="12" :offset="6">
+        <div style="margin-top: 15px;">
+          <el-input placeholder="搜索关键字" v-model="serchWord" class="input-with-select">
+            <el-button slot="append" icon="el-icon-search" v-on:click="search()"></el-button>
+          </el-input>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="3" :offset="6">
+        <el-table
+          ref="singleTable"
+          highlight-current-row
+          @current-change="handleCurrentChange"
+          :data="keywords"
+          style="width: 100%;margin-bottom: 20px;margin-top: 17px;"
+          border
+          row-key="id"
+        >
+          <el-table-column prop="keywordsContent" label="keyword" sortable></el-table-column>
+        </el-table>
+      </el-col>
+      <el-col :span="9">
+        <el-table
+          :data="messages"
+          style="width: 100%;margin-bottom: 20px;margin-top: 17px;"
+          border
+          row-key="id"
+        >
+          <el-table-column prop="date" label="date" sortable width="180"></el-table-column>
+          <el-table-column prop="content" label="content" sortable></el-table-column>
+        </el-table>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "User",
+  data() {
+    return {
+      msg: "Welcome A",
+      serchWord: "",
+      keywords: "",
+      messages: "",
+      currentKeyword: ""
+    };
+  },
+  methods: {
+    search: function() {
+      if (this.serchWord == "") {
+        this.create();
+        return;
+      }
+
+      this.$axios
+        .get(
+          this.$HOST +
+            "recommend/v1/user/getKeywordsByContent?userName=test&content=" +
+            this.serchWord
+        )
+        .then(res => {
+          if (res.data.length == 0) {
+            this.$confirm("您还没有监听此关键字，是否添加监听?", "提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "success",
+              center: true
+            }).then(() => {
+              this.addKeyWord();
+              this.$message({
+                type: "success",
+                message: "监听成功!"
+              });
+            });
+            this.keywords = "";
+            this.messages = "";
+          } else {
+            this.keywords = res.data;
+            if (this.keywords.length != 0) {
+              console.log(this.keywords[0].keywordsContent);
+              this.$axios
+                .get(
+                  this.$HOST +
+                    "recommend/v1/user/getMsgByKeyword?keyword=" +
+                    this.keywords[0].keywordsContent
+                )
+                .then(res => {
+                  this.messages = res.data;
+                  console.log(res);
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+            }
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    addKeyWord: function() {
+      this.$axios
+        .post(
+          this.$HOST +
+            "recommend/v1/user/addKeyWord?userName=test&keyWord=" +
+            this.serchWord
+        )
+        .then(res => {
+          console.log(res);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    create: function() {
+      this.$axios
+        .get(this.$HOST + "recommend/v1/user/getAllKeywords?userName=test")
+        .then(res => {
+          this.keywords = res.data;
+          if (this.keywords.length != 0) {
+            console.log(this.keywords[0].keywordsContent);
+            this.$axios
+              .get(
+                this.$HOST +
+                  "recommend/v1/user/getMsgByKeyword?keyword=" +
+                  this.keywords[0].keywordsContent
+              )
+              .then(res => {
+                this.messages = res.data;
+                console.log(res);
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    handleCurrentChange(val) {
+      this.currentRow = val;
+      this.currentKeyword = val.keywordsContent;
+      if (this.currentKeyword.length != 0) {
+        this.$axios
+          .get(
+            this.$HOST +
+              "recommend/v1/user/getMsgByKeyword?keyword=" +
+              this.currentKeyword
+          )
+          .then(res => {
+            this.messages = res.data;
+            console.log(res);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
+    }
+  },
+  created: function() {
+    this.create();
+  }
+};
+</script>
+
+<style scoped>
+h1 {
+  color: #409eff;
+}
+h2 {
+  font-weight: normal;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
+</style>
+
+
+
