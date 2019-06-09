@@ -20,8 +20,8 @@ const router = new VueRouter({
   mode: 'history',
   base: __dirname,
   routes: [
-    { path: '/user', component: User },
-    { path: '/worker', component: Worker }
+    { path: '/sublt', component: User }
+    // { path: '/worker', component: Worker }
   ]
 })
 

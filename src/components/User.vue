@@ -61,7 +61,7 @@ export default {
       this.$axios
         .get(
           this.$HOST +
-            "recommend/v1/user/getKeywordsByContent?userName=test&content=" +
+            "sublt/v1/user/getKeywordsByContent?userName=test&content=" +
             this.serchWord
         )
         .then(res => {
@@ -87,7 +87,7 @@ export default {
               this.$axios
                 .get(
                   this.$HOST +
-                    "recommend/v1/user/getMsgByKeyword?keyword=" +
+                    "sublt/v1/user/getMsgByKeyword?keyword=" +
                     this.keywords[0].keywordsContent
                 )
                 .then(res => {
@@ -108,7 +108,7 @@ export default {
       this.$axios
         .post(
           this.$HOST +
-            "recommend/v1/user/addKeyWord?userName=test&keyWord=" +
+            "sublt/v1/user/addKeyWord?userName=test&keyWord=" +
             this.serchWord
         )
         .then(res => {
@@ -120,7 +120,7 @@ export default {
     },
     create: function() {
       this.$axios
-        .get(this.$HOST + "recommend/v1/user/getAllKeywords?userName=test")
+        .get(this.$HOST + "sublt/v1/user/getAllKeywords?userName=test")
         .then(res => {
           this.keywords = res.data;
           if (this.keywords.length != 0) {
@@ -128,7 +128,7 @@ export default {
             this.$axios
               .get(
                 this.$HOST +
-                  "recommend/v1/user/getMsgByKeyword?keyword=" +
+                  "sublt/v1/user/getMsgByKeyword?keyword=" +
                   this.keywords[0].keywordsContent
               )
               .then(res => {
@@ -151,7 +151,7 @@ export default {
         this.$axios
           .get(
             this.$HOST +
-              "recommend/v1/user/getMsgByKeyword?keyword=" +
+              "sublt/v1/user/getMsgByKeyword?keyword=" +
               this.currentKeyword
           )
           .then(res => {
