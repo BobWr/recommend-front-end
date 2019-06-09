@@ -31,7 +31,7 @@
           border
           row-key="id"
         >
-          <el-table-column prop="date" label="date" sortable width="180"></el-table-column>
+          <!-- <el-table-column prop="date" label="date" sortable width="180"></el-table-column> -->
           <el-table-column prop="content" label="content" sortable></el-table-column>
         </el-table>
       </el-col>
