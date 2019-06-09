@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.use(VueRouter)
 Vue.prototype.$axios = Axios;
-Vue.prototype.$HOST = "http://localhost:9995/";
+Vue.prototype.$HOST = "http://localhost:19998/";
 
 //设置路由
 const router = new VueRouter({
