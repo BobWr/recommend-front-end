@@ -22,6 +22,15 @@
           row-key="id"
         >
           <el-table-column prop="keywordsContent" label="keyword" sortable></el-table-column>
+          <el-table-column fixed="right" label="操作" width="67">
+            <template slot-scope="scope">
+              <el-button
+                @click.native.prevent="deleteRow(scope.$index, keywords)"
+                type="text"
+                size="small"
+              >取消订阅</el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </el-col>
       <el-col :span="9">
@@ -44,7 +53,7 @@ export default {
   name: "User",
   data() {
     return {
-      msg: "Welcome A",
+      msg: "Sublt",
       serchWord: "",
       keywords: "",
       messages: "",
@@ -52,6 +61,41 @@ export default {
     };
   },
   methods: {
+    deleteRow(index, rows) {
+      this.$confirm(
+        "取消订阅后将接收不到邮件推送，您确定取消订阅此关键字吗?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "success",
+          center: true
+        }
+      ).then(() => {
+        this.$axios
+          .get(
+            this.$HOST +
+              "sublt/v1/user/deleteKeyword?userName=" +
+              rows[index].userName +
+              "&content=" +
+              rows[index].keywordsContent
+          )
+          .then(res => {
+            this.$message({
+              type: "success",
+              message: "操作成功!"
+            });
+            console.log(rows);
+            rows.splice(index, 1);
+            console.log(rows);
+            // handleCurrentChange(rows[1]);
+            console.log(res);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      });
+    },
     search: function() {
       if (this.serchWord == "") {
         this.create();
