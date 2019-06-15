@@ -116,11 +116,41 @@ export default {
               type: "success",
               center: true
             }).then(() => {
-              this.addKeyWord();
-              this.$message({
-                type: "success",
-                message: "监听成功!"
-              });
+              this.$prompt("请输入用户名", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消"
+              })
+                .then(({ value }) => {
+                  this.$axios
+                    .post(
+                      this.$HOST +
+                        "sublt/v1/user/addKeyWord?userName=" +
+                        value +
+                        "&keyWord=" +
+                        this.serchWord
+                    )
+                    .then(res => {
+                      this.$message({
+                        type: "success",
+                        message: "监听成功!"
+                      });
+                      console.log(res);
+                    })
+                    .catch(error => {
+                      this.$message({
+                        type: "success",
+                        message: "监听失败!"
+                      });
+                      console.log(error);
+                    });
+                })
+                .catch(() => {
+                  this.$message({
+                    type: "info",
+                    message: "操作已取消"
+                  });
+                });
+              // this.addKeyWord();
             });
             this.keywords = "";
             this.messages = "";
