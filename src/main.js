@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI);
 Vue.use(VueRouter)
 Vue.prototype.$axios = Axios;
-Vue.prototype.$HOST = "http://127.0.0.1:9991/";
+Vue.prototype.$HOST = "http://54.84.185.105:9991/";
 
 //设置路由
 const router = new VueRouter({
