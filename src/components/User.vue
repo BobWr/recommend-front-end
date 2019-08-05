@@ -102,98 +102,141 @@ export default {
         return;
       }
 
-      this.$prompt("请输入用户名", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消"
+      this.$confirm("您是否已注册？", {
+        confirmButtonText: "是",
+        cancelButtonText: "不，我只试一试"
       })
         .then(({ value }) => {
-          this.$axios
-            .get(
-              this.$HOST +
-                "sublt/v1/user/getKeywordsByContent?userName=" +
-                value +
-                "&content=" +
-                this.serchWord
-            )
-            .then(res => {
-              if (res.data.length == 0) {
-                this.$confirm(
-                  value + ", 您还没有监听此关键字，是否添加监听?",
-                  "提示",
-                  {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "success",
-                    center: true
-                  }
-                ).then(() => {
-                  this.$prompt("请输入用户名", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消"
-                  })
-                    .then(({ value }) => {
+          this.$prompt("请输入用户名", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消"
+          })
+            .then(({ value }) => {
+              this.$axios
+                .get(
+                  this.$HOST +
+                    "sublt/v1/user/getKeywordsByContent?userName=" +
+                    value +
+                    "&content=" +
+                    this.serchWord
+                )
+                .then(res => {
+                  if (res.data.length == 0) {
+                    this.$confirm(
+                      value + ", 您还没有监听此关键字，是否添加监听?",
+                      "提示",
+                      {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "success",
+                        center: true
+                      }
+                    ).then(() => {
+                      this.$prompt("请输入用户名", {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消"
+                      })
+                        .then(({ value }) => {
+                          this.$axios
+                            .post(
+                              this.$HOST +
+                                "sublt/v1/user/addKeyWord?userName=" +
+                                value +
+                                "&keyWord=" +
+                                this.serchWord
+                            )
+                            .then(res => {
+                              this.$message({
+                                type: "success",
+                                message: "监听成功!"
+                              });
+                              console.log(res);
+                            })
+                            .catch(error => {
+                              this.$message({
+                                type: "success",
+                                message: "监听失败!"
+                              });
+                              console.log(error);
+                            });
+                        })
+                        .catch(() => {
+                          this.$message({
+                            type: "info",
+                            message: "操作已取消"
+                          });
+                        });
+                      // this.addKeyWord();
+                    });
+                    this.keywords = "";
+                    this.messages = "";
+                  } else {
+                    this.keywords = res.data;
+                    if (this.keywords.length != 0) {
+                      console.log(this.keywords[0].keywordsContent);
                       this.$axios
-                        .post(
+                        .get(
                           this.$HOST +
-                            "sublt/v1/user/addKeyWord?userName=" +
-                            value +
-                            "&keyWord=" +
-                            this.serchWord
+                            "sublt/v1/user/getMsgByKeyword?keyword=" +
+                            this.keywords[0].keywordsContent
                         )
                         .then(res => {
-                          this.$message({
-                            type: "success",
-                            message: "监听成功!"
-                          });
+                          this.messages = res.data;
                           console.log(res);
                         })
                         .catch(error => {
-                          this.$message({
-                            type: "success",
-                            message: "监听失败!"
-                          });
                           console.log(error);
                         });
-                    })
-                    .catch(() => {
-                      this.$message({
-                        type: "info",
-                        message: "操作已取消"
-                      });
-                    });
-                  // this.addKeyWord();
+                    }
+                  }
+                })
+                .catch(error => {
+                  console.log(error);
                 });
-                this.keywords = "";
-                this.messages = "";
-              } else {
-                this.keywords = res.data;
-                if (this.keywords.length != 0) {
-                  console.log(this.keywords[0].keywordsContent);
-                  this.$axios
-                    .get(
-                      this.$HOST +
-                        "sublt/v1/user/getMsgByKeyword?keyword=" +
-                        this.keywords[0].keywordsContent
-                    )
-                    .then(res => {
-                      this.messages = res.data;
-                      console.log(res);
-                    })
-                    .catch(error => {
-                      console.log(error);
-                    });
-                }
-              }
             })
-            .catch(error => {
-              console.log(error);
+            .catch(() => {
+              this.$message({
+                type: "info",
+                message: "操作已取消"
+              });
             });
         })
         .catch(() => {
-          this.$message({
-            type: "info",
-            message: "操作已取消"
-          });
+          this.$prompt("请输入邮箱", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消"
+          })
+            .then(({ value }) => {
+              this.$axios
+                .post(
+                  this.$HOST +
+                    "sublt/v1/user/try?mail=" +
+                    value +
+                    "&keyWord=" +
+                    this.serchWord
+                )
+                .then(res => {
+                  this.$message({
+                    type: "success",
+                    message: "操作成功，请注意查收邮件！"
+                  });
+                  this.messages = res.data;
+                  console.log(res);
+                })
+                .catch(error => {
+                  this.$message({
+                    type: "success",
+                    message: "操作失败!"
+                  });
+                  console.log(error);
+                });
+            })
+            .catch(() => {
+              this.$message({
+                type: "info",
+                message: "操作已取消"
+              });
+            });
         });
     },
     addKeyWord: function() {
